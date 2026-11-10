@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import {
     ArrowRight,
     Award,
@@ -21,8 +21,8 @@ import {
     UserPlus,
     Zap,
 } from 'lucide-vue-next';
-import { ref, onMounted, onUnmounted } from 'vue';
-import { login, register } from '@/routes';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { login, logout, register } from '@/routes';
 
 const props = defineProps<{
     canRegister: boolean;
@@ -40,6 +40,9 @@ const props = defineProps<{
 }>();
 
 const isScrolled = ref(false);
+
+const page = usePage();
+const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 40;
@@ -348,6 +351,31 @@ const mobileMenuOpen = ref(false);
                         <span class="relative z-10">Catálogo de Menú</span>
                     </Link>
                     <Link
+                        v-if="isAuthenticated"
+                        :href="logout().url"
+                        method="post"
+                        as="button"
+                        class="rounded-xl border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:scale-105"
+                    >
+                        Cerrar Sesión
+                    </Link>
+                    <Link
+                        v-else-if="canRegister"
+                        :href="register()"
+                        class="rounded-xl border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:scale-105"
+                    >
+                        Registrarse
+                    </Link>
+                    <Link
+                        v-if="isAuthenticated"
+                        :href="'/dashboard'"
+                        class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-sky-500 via-purple-500 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/40 hover:scale-105"
+                    >
+                        <span class="absolute inset-0 bg-gradient-to-r from-sky-300 via-purple-400 to-purple-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+                        <span class="relative z-10">Ir al Dashboard</span>
+                    </Link>
+                    <Link
+                        v-else
                         :href="login()"
                         class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-sky-500 via-purple-500 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/40 hover:scale-105"
                     >
@@ -384,6 +412,33 @@ const mobileMenuOpen = ref(false);
                             Catálogo de Menú
                         </Link>
                         <Link
+                            v-if="isAuthenticated"
+                            :href="logout().url"
+                            method="post"
+                            as="button"
+                            class="flex items-center justify-center rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all duration-300"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Cerrar Sesión
+                        </Link>
+                        <Link
+                            v-else-if="canRegister"
+                            :href="register()"
+                            class="flex items-center justify-center rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all duration-300"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Registrarse
+                        </Link>
+                        <Link
+                            v-if="isAuthenticated"
+                            href="/dashboard"
+                            class="flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 via-purple-500 to-purple-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Ir al Dashboard
+                        </Link>
+                        <Link
+                            v-else
                             :href="login()"
                             class="flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 via-purple-500 to-purple-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300"
                             @click="mobileMenuOpen = false"
