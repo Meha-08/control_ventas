@@ -81,10 +81,10 @@ const clearSearch = () => {
     });
 };
 
-const filterByTipo = (value: string) => {
+const filterByTipo = (value: unknown) => {
     router.get(descansoProductosRoutes.index(), {
         search: search.value || undefined,
-        tipo: value || undefined,
+        tipo: value === 'all' || value === null ? undefined : String(value),
         estado: props.filters.estado,
     }, {
         preserveState: true,
@@ -112,21 +112,40 @@ const confirmDelete = (producto: DescansoProducto) => {
 };
 
 const stockVariant = (stock: number): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    if (stock > 10) return 'default';
-    if (stock > 0) return 'secondary';
+    if (stock > 10) {
+return 'default';
+}
+
+    if (stock > 0) {
+return 'secondary';
+}
+
     return 'destructive';
 };
 
 const formatPrice = (price: string | number) => {
     const num = typeof price === 'string' ? Number.parseFloat(price) : price;
-    if (Number.isNaN(num)) return 'Bs 0.00';
+
+    if (Number.isNaN(num)) {
+return 'Bs 0.00';
+}
+
     return 'Bs ' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 const tipoIcon = (tipo: string) => {
-    if (tipo.toLowerCase().includes('colch')) return BedDouble;
-    if (tipo.toLowerCase().includes('somier')) return Bed;
-    if (tipo.toLowerCase().includes('cama')) return BedDouble;
+    if (tipo.toLowerCase().includes('colch')) {
+return BedDouble;
+}
+
+    if (tipo.toLowerCase().includes('somier')) {
+return Bed;
+}
+
+    if (tipo.toLowerCase().includes('cama')) {
+return BedDouble;
+}
+
     return BedSingle;
 };
 
@@ -193,14 +212,14 @@ const getGradient = (name: string) => cardGradients[name.charCodeAt(0) % cardGra
                         Buscar
                     </Button>
                     <Select
-                        :model-value="filters.tipo ?? ''"
+                        :model-value="filters.tipo ?? 'all'"
                         @update:model-value="filterByTipo"
                     >
                         <SelectTrigger class="w-[180px] h-11 rounded-xl border-[#C084FC]/20">
                             <SelectValue placeholder="Todos los tipos" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem :value="''">
+                            <SelectItem value="all">
                                 Todos los tipos
                             </SelectItem>
                             <SelectItem v-for="cat in categorias" :key="cat.id" :value="cat.nombre">

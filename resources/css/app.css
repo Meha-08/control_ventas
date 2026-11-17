@@ -195,6 +195,12 @@
     100%{background-position:0% 50%}
 }
 
+@keyframes hero-zoom {
+    0%,100%{transform:scale(1.04)}
+    50%{transform:scale(1.12)}
+}
+
+
 @keyframes ray { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
 
 .animate-aurora-1 { animation: aurora-1 12s ease-in-out infinite; }
@@ -212,6 +218,9 @@
 .animate-orbit { animation: orbit 8s linear infinite; }
 .animate-ray { animation: ray 20s linear infinite; }
 .animate-border-rotate { background-size: 300% 300%; animation: border-rotate 4s ease infinite; }
+.animate-hero-zoom { animation: hero-zoom 20s ease-in-out infinite; }
+.animate-hero-shimmer { animation: shimmer-sweep 7s linear infinite; }
+
 
 /* stagger helpers */
 .stagger-1 { animation-delay: 0.05s; }

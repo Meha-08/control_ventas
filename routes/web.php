@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DashboardController;
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+
+Route::middleware('guest')->group(function () {
+    Route::get('auth/google/redirect', [GoogleController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+    Route::get('login/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback.legacy');
+});
 
 Route::middleware(['auth', 'verified', 'role:admin,vendedor,cliente'])->group(function () {
     Route::get('dashboard', DashboardController::class)

@@ -42,7 +42,7 @@ type ItemData = {
     subtotal: number;
 };
 
-const clienteId = ref('');
+const clienteId = ref('none');
 const tipoComprobante = ref('Boleta');
 const nroComprobante = ref('');
 const errors = ref<Record<string, string>>({});
@@ -71,13 +71,20 @@ const removeItem = (index: number) => {
 const onProductSelect = (index: number, productId: string) => {
     const product = props.productos.find((p) => String(p.id) === productId);
 
-    if (product) {
-        items[index].product_id = product.id;
-        items[index].product_name = product.nombre;
-        items[index].precio_unitario = Number(product.precio);
-        items[index].cantidad = 1;
-        items[index].subtotal = Number(product.precio) * 1;
+    if (!product) {
+        items[index].product_id = null;
+        items[index].product_name = '';
+        items[index].precio_unitario = 0;
+        items[index].subtotal = 0;
+
+        return;
     }
+
+    items[index].product_id = product.id;
+    items[index].product_name = product.nombre;
+    items[index].precio_unitario = Number(product.precio);
+    items[index].cantidad = 1;
+    items[index].subtotal = Number(product.precio) * 1;
 };
 
 const updateSubtotal = (index: number) => {
@@ -97,7 +104,7 @@ const submit = () => {
     }
 
     router.post(ventasRoutes.store().url, {
-        cliente_id: clienteId.value || undefined,
+        cliente_id: clienteId.value === 'none' ? undefined : clienteId.value,
         tipo_comprobante: tipoComprobante.value,
         nro_comprobante: nroComprobante.value || undefined,
         total: total.value,
@@ -163,7 +170,7 @@ const submit = () => {
                                 <SelectValue placeholder="Seleccionar cliente (opcional)" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Sin cliente</SelectItem>
+                                <SelectItem value="none">Sin cliente</SelectItem>
                                 <SelectItem
                                     v-for="cliente in clientes"
                                     :key="cliente.id"
@@ -254,14 +261,13 @@ const submit = () => {
                             <div class="grid gap-2">
                                 <Label :for="'producto_' + index" class="text-xs font-semibold text-muted-foreground">Producto</Label>
                                 <Select
-                                    :model-value="String(item.product_id ?? '')"
-                                    @update:model-value="(val) => onProductSelect(index, val)"
+                                    :model-value="item.product_id === null ? undefined : String(item.product_id)"
+                                    @update:model-value="(val) => onProductSelect(index, String(val))"
                                 >
                                     <SelectTrigger class="w-full" :id="'producto_' + index">
                                         <SelectValue placeholder="Seleccionar producto" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Seleccionar producto</SelectItem>
                                         <SelectItem
                                             v-for="producto in productos"
                                             :key="producto.id"

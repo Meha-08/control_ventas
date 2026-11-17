@@ -71,6 +71,7 @@ class DashboardController extends Controller
         $recentActivity = $recentActivity->sortByDesc('created_at')->values()->take(6);
 
         return Inertia::render('Dashboard', [
+            'heroImagen' => (string) config('app.hero_image'),
             'stats' => $stats,
             'recentClientes' => $recentClientes,
             'recentUsuarios' => $recentUsuarios,

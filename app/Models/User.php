@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['nombre_u', 'a_paterno', 'a_materno', 'direccion', 'ci', 'email', 'password', 'role', 'active', 'fecha_ingreso', 'fecha_fin', 'telefono'])]
+#[Fillable(['nombre_u', 'a_paterno', 'a_materno', 'direccion', 'ci', 'email', 'google_id', 'avatar', 'password', 'role', 'active', 'fecha_ingreso', 'fecha_fin', 'telefono'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -58,6 +58,18 @@ class User extends Authenticatable
     {
         $role = Role::firstOrCreate(['nombre' => $roleName]);
         $this->roles()->syncWithoutDetaching([$role->id]);
+    }
+
+    /**
+     * @param  array<int, string>  $roleNames
+     */
+    public function syncRoles(array $roleNames): void
+    {
+        $roleIds = collect($roleNames)
+            ->map(fn (string $roleName) => Role::firstOrCreate(['nombre' => $roleName])->id)
+            ->all();
+
+        $this->roles()->sync($roleIds);
     }
 
     public function hasRole(string $role): bool

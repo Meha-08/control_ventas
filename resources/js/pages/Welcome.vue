@@ -22,6 +22,7 @@ import {
     Zap,
 } from 'lucide-vue-next';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import type { Component } from 'vue';
 import { login, logout, register } from '@/routes';
 
 const props = defineProps<{
@@ -35,6 +36,7 @@ const props = defineProps<{
         stock: number;
         imagen_url: string | null;
     }[];
+    tipos: string[];
     categoriaImagenes: Record<string, string>;
     heroImagen: string;
 }>();
@@ -71,121 +73,103 @@ const observeSections = () => {
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 };
 
-const menuItems = [
+type CategoriaEstilo = {
+    descripcion: string;
+    icono: Component;
+    gradient: string;
+    hoverGradient: string;
+    color: string;
+    bgIcon: string;
+};
+
+const normalizarTipo = (nombre: string): string =>
+    nombre
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, '');
+
+const estiloColchones: CategoriaEstilo = {
+    descripcion: 'Viscoelásticos, ortopédicos y de resortes',
+    icono: BedDouble,
+    gradient: 'from-sky-500/20 via-purple-500/10 to-transparent',
+    hoverGradient: 'from-sky-500/30 via-purple-500/20 to-transparent',
+    color: 'text-sky-400',
+    bgIcon: 'bg-sky-500/20',
+};
+
+const estiloSomieres: CategoriaEstilo = {
+    descripcion: 'Americanos, abatibles y metálicos',
+    icono: Bed,
+    gradient: 'from-purple-500/20 via-purple-500/10 to-transparent',
+    hoverGradient: 'from-purple-500/30 via-purple-500/20 to-transparent',
+    color: 'text-purple-400',
+    bgIcon: 'bg-purple-500/20',
+};
+
+const estiloEspaldares: CategoriaEstilo = {
+    descripcion: 'Tapizados, modernos y clásicos',
+    icono: BedSingle,
+    gradient: 'from-sky-500/20 via-purple-500/10 to-transparent',
+    hoverGradient: 'from-sky-500/30 via-purple-500/20 to-transparent',
+    color: 'text-sky-400',
+    bgIcon: 'bg-sky-500/20',
+};
+
+const estiloAlmohadas: CategoriaEstilo = {
+    descripcion: 'Viscoelásticas, pluma y ortopédicas',
+    icono: BedSingle,
+    gradient: 'from-purple-500/20 via-sky-500/10 to-transparent',
+    hoverGradient: 'from-purple-500/30 via-sky-500/20 to-transparent',
+    color: 'text-purple-400',
+    bgIcon: 'bg-purple-500/20',
+};
+
+const estiloCamas: CategoriaEstilo = {
+    descripcion: 'Juegos completos para tu descanso',
+    icono: BedDouble,
+    gradient: 'from-purple-500/20 via-sky-500/10 to-transparent',
+    hoverGradient: 'from-purple-500/30 via-sky-500/20 to-transparent',
+    color: 'text-purple-400',
+    bgIcon: 'bg-purple-500/20',
+};
+
+const estiloPorDefecto: CategoriaEstilo = {
+    descripcion: 'Productos para tu descanso',
+    icono: Package,
+    gradient: 'from-sky-500/20 via-purple-500/10 to-transparent',
+    hoverGradient: 'from-sky-500/30 via-purple-500/20 to-transparent',
+    color: 'text-sky-400',
+    bgIcon: 'bg-sky-500/20',
+};
+
+const estilosCategorias: Record<string, CategoriaEstilo> = {
+    colchon: estiloColchones,
+    colchones: estiloColchones,
+    somier: estiloSomieres,
+    somieres: estiloSomieres,
+    espaldar: estiloEspaldares,
+    espaldares: estiloEspaldares,
+    almohada: estiloAlmohadas,
+    almohadas: estiloAlmohadas,
+    camacompleta: estiloCamas,
+    basesdecama: estiloCamas,
+};
+
+const menuItems = computed(() => [
     { label: 'Inicio', href: '#hero' },
-    { label: 'Colchones', href: '#categorias' },
-    { label: 'Somieres', href: '#categorias' },
-    { label: 'Espaldares', href: '#categorias' },
-    { label: 'Almohadas', href: '#categorias' },
-    { label: 'Cama completa', href: '#categorias' },
+    ...props.tipos.map((tipo) => ({ label: tipo, href: '#categorias' })),
     { label: 'Ofertas', href: '#productos' },
     { label: 'Contacto', href: '#contacto' },
-];
+]);
 
-const categorias = [
-    {
-        nombre: 'Colchones',
-        descripcion: 'Viscoelásticos, ortopédicos y de resortes',
-        icono: BedDouble,
-        gradient: 'from-sky-500/20 via-purple-500/10 to-transparent',
-        hoverGradient: 'from-sky-500/30 via-purple-500/20 to-transparent',
-        color: 'text-sky-400',
-        bgIcon: 'bg-sky-500/20',
-    },
-    {
-        nombre: 'Somier',
-        descripcion: 'Americanos, abatibles y metálicos',
-        icono: Bed,
-        gradient: 'from-purple-500/20 via-purple-500/10 to-transparent',
-        hoverGradient: 'from-purple-500/30 via-purple-500/20 to-transparent',
-        color: 'text-purple-400',
-        bgIcon: 'bg-purple-500/20',
-    },
-    {
-        nombre: 'Espaldar',
-        descripcion: 'Tapizados, modernos y clásicos',
-        icono: BedSingle,
-        gradient: 'from-sky-500/20 via-purple-500/10 to-transparent',
-        hoverGradient: 'from-sky-500/30 via-purple-500/20 to-transparent',
-        color: 'text-sky-400',
-        bgIcon: 'bg-sky-500/20',
-    },
-    {
-        nombre: 'Almohadas',
-        descripcion: 'Viscoelásticas, pluma y ortopédicas',
-        icono: BedSingle,
-        gradient: 'from-purple-500/20 via-sky-500/10 to-transparent',
-        hoverGradient: 'from-purple-500/30 via-sky-500/20 to-transparent',
-        color: 'text-purple-400',
-        bgIcon: 'bg-purple-500/20',
-    },
-    {
-        nombre: 'Cama completa',
-        descripcion: 'Juegos completos para tu descanso',
-        icono: BedDouble,
-        gradient: 'from-purple-500/20 via-sky-500/10 to-transparent',
-        hoverGradient: 'from-purple-500/30 via-sky-500/20 to-transparent',
-        color: 'text-purple-400',
-        bgIcon: 'bg-purple-500/20',
-    },
-];
+const categorias = computed(() =>
+    props.tipos.map((nombre) => ({
+        nombre,
+        ...(estilosCategorias[normalizarTipo(nombre)] ?? estiloPorDefecto),
+    })),
+);
 
-const productosDestacados = [
-    {
-        nombre: 'Colchón Viscoelástico Premium',
-        precio: 1899,
-        precioOriginal: 2499,
-        descuento: '-24%',
-        imagen: 'https://images.unsplash.com/photo-1630493565608-e34c7f8b2a48?w=600&q=80',
-        rating: 5,
-        categoria: 'Colchones',
-    },
-    {
-        nombre: 'Somier Americano Luxe',
-        precio: 999,
-        precioOriginal: 1399,
-        descuento: '-29%',
-        imagen: 'https://images.unsplash.com/photo-1505692952047-1a78307da8e2?w=600&q=80',
-        rating: 5,
-        categoria: 'Somieres',
-    },
-    {
-        nombre: 'Espaldar Tapizado Milano',
-        precio: 599,
-        precioOriginal: 799,
-        descuento: '-25%',
-        imagen: 'https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?w=600&q=80',
-        rating: 4,
-        categoria: 'Espaldares',
-    },
-    {
-        nombre: 'Almohada Viscoelástica Memory',
-        precio: 249,
-        precioOriginal: 349,
-        descuento: '-29%',
-        imagen: 'https://images.unsplash.com/photo-1512918553160-c6e76e7b91b3?w=600&q=80',
-        rating: 5,
-        categoria: 'Almohadas',
-    },
-    {
-        nombre: 'Colchón Ortopédico Duro',
-        precio: 2199,
-        precioOriginal: 2899,
-        descuento: '-24%',
-        imagen: 'https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=600&q=80',
-        rating: 5,
-        categoria: 'Colchones',
-    },
-    {
-        nombre: 'Somier Abatible con Almacén',
-        precio: 1499,
-        precioOriginal: 1999,
-        descuento: '-25%',
-        imagen: 'https://images.unsplash.com/photo-1445991842772-097fea258e7b?w=600&q=80',
-        rating: 4,
-        categoria: 'Somieres',
-    },
-];
 
 const beneficios = [
     {
@@ -245,7 +229,11 @@ const testimonios = [
 
 const formatPrice = (price: string | number) => {
     const num = typeof price === 'string' ? Number.parseFloat(price) : price;
-    if (Number.isNaN(num)) return 'Bs 0';
+
+    if (Number.isNaN(num)) {
+return 'Bs 0';
+}
+
     return 'Bs ' + num.toLocaleString('es-BO');
 };
 
@@ -261,13 +249,19 @@ const goToCategoria = (tipo: string) => {
     router.get('/menu', { tipo }, { preserveState: true, replace: true });
 };
 
+const pseudoRandom = (seed: number): number => {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+
+    return value - Math.floor(value);
+};
+
 const bubbles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: 20 + Math.random() * 80,
-    left: Math.random() * 100,
-    delay: Math.random() * 8,
-    duration: 8 + Math.random() * 12,
-    opacity: 0.06 + Math.random() * 0.08,
+    size: 20 + pseudoRandom(i + 1) * 80,
+    left: pseudoRandom(i + 13) * 100,
+    delay: pseudoRandom(i + 29) * 8,
+    duration: 8 + pseudoRandom(i + 47) * 12,
+    opacity: 0.06 + pseudoRandom(i + 67) * 0.08,
 }));
 
 const mobileMenuOpen = ref(false);
@@ -454,12 +448,15 @@ const mobileMenuOpen = ref(false);
             <div class="absolute inset-0">
                 <img
                     :src="heroImagen"
-                    alt="Habitación moderna"
-                    class="h-full w-full object-cover opacity-85"
+                    alt="Habitación moderna con productos de descanso"
+                    class="animate-hero-zoom h-full w-full object-cover object-[center_55%] brightness-110 saturate-125 contrast-110"
                 />
-                <div class="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-purple-900/30 to-transparent"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-purple-900/50 via-transparent to-purple-900/20"></div>
+                <div class="animate-aurora-1 absolute -top-32 left-[8%] h-[28rem] w-[28rem] rounded-full bg-sky-400/15 blur-3xl"></div>
+                <div class="animate-aurora-2 absolute -right-24 bottom-[-8rem] h-[34rem] w-[34rem] rounded-full bg-fuchsia-500/15 blur-3xl"></div>
+                <div class="absolute inset-0 bg-linear-to-r from-slate-950/65 via-purple-950/25 to-transparent"></div>
+                <div class="absolute inset-0 bg-linear-to-t from-slate-950/55 via-transparent to-purple-950/10"></div>
             </div>
+
 
             <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-20 md:py-32">
                 <div class="max-w-3xl">
@@ -468,7 +465,7 @@ const mobileMenuOpen = ref(false);
                         Nueva colección 2026
                     </div>
 
-                    <h1 class="reveal mb-6 text-5xl font-black leading-[1.1] tracking-tight text-white md:text-7xl lg:text-8xl">
+                    <h1 class="reveal [text-shadow:0_4px_24px_#000000aa] mb-6 text-5xl font-black leading-[1.1] tracking-tight text-white md:text-7xl lg:text-8xl">
                         Descanso que
                         <span class="bg-gradient-to-r from-sky-300 via-purple-400 to-purple-600 bg-clip-text text-transparent">
                             transforma
@@ -476,7 +473,7 @@ const mobileMenuOpen = ref(false);
                         tu vida
                     </h1>
 
-                    <p class="reveal mb-10 max-w-xl text-lg leading-relaxed text-white/60 md:text-xl">
+                    <p class="reveal [text-shadow:0_2px_12px_#000000aa] mb-10 max-w-xl text-lg leading-relaxed text-white/70 md:text-xl">
                         Colchones, somieres, espaldares y almohadas diseñados para brindarte el mejor descanso. Calidad premium con entregas en toda Bolivia.
                     </p>
 
@@ -512,6 +509,24 @@ const mobileMenuOpen = ref(false);
                             <p class="mt-1 text-sm font-medium text-white/50">Más de <span class="text-white font-bold">2,000</span> clientes satisfechos</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="absolute right-10 top-1/2 hidden -translate-y-1/2 xl:block">
+                <div class="glass-card-dark animate-float-card glow-lilac max-w-xs rounded-3xl p-6 text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-400 to-purple-600 shadow-lg shadow-purple-500/30">
+                            <Sparkles class="h-6 w-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold tracking-widest text-sky-200 uppercase">Diseño premium</p>
+                            <p class="text-lg font-bold">Descanso garantizado</p>
+                        </div>
+                    </div>
+                    <div class="mt-5 h-px bg-linear-to-r from-sky-300/60 via-purple-300/30 to-transparent"></div>
+                    <p class="mt-4 text-sm leading-relaxed text-white/60">
+                        Materiales de alta calidad y entregas en toda Bolivia.
+                    </p>
                 </div>
             </div>
 
@@ -805,7 +820,7 @@ const mobileMenuOpen = ref(false);
                     <div>
                         <h3 class="mb-5 text-sm font-bold uppercase tracking-widest text-white/60">Productos</h3>
                         <ul class="space-y-3">
-                            <li v-for="item in ['Colchones', 'Somier', 'Espaldar', 'Almohadas', 'Cama completa']" :key="item">
+                            <li v-for="item in tipos" :key="item">
                                 <Link :href="'/menu?tipo=' + item" class="text-sm text-white/40 transition-all duration-300 hover:text-sky-300 hover:translate-x-1 inline-block">
                                     {{ item }}
                                 </Link>

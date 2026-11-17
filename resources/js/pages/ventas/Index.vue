@@ -45,12 +45,12 @@ defineOptions({
 });
 
 const search = ref(props.filters.search ?? '');
-const estado = ref(props.filters.estado ?? '');
+const estado = ref(props.filters.estado ?? 'all');
 
 const searchVentas = () => {
     router.get(ventasRoutes.index(), {
         search: search.value || undefined,
-        estado: estado.value || undefined,
+        estado: estado.value === 'all' ? undefined : estado.value,
     }, {
         preserveState: true,
         replace: true,
@@ -59,7 +59,7 @@ const searchVentas = () => {
 
 const clearSearch = () => {
     search.value = '';
-    estado.value = '';
+    estado.value = 'all';
     router.get(ventasRoutes.index(), {}, {
         preserveState: true,
         replace: true,
@@ -76,6 +76,7 @@ const confirmAnular = (venta: Venta) => {
 
 const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
+
     return date.toLocaleDateString('es-BO', {
         day: '2-digit',
         month: 'short',
@@ -149,7 +150,7 @@ const getGradient = (id: number) => cardGradients[id % cardGradients.length];
                             <SelectValue placeholder="Todos los estados" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">Todos los estados</SelectItem>
+                            <SelectItem value="all">Todos los estados</SelectItem>
                             <SelectItem value="completado">Completado</SelectItem>
                             <SelectItem value="anulado">Anulado</SelectItem>
                         </SelectContent>

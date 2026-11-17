@@ -18,9 +18,7 @@ import {
     User,
     UserPlus,
     Users,
-    DollarSign,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { useAnimatedCounter } from '@/composables/useAnimatedCounter';
 import clientesRoutes from '@/routes/clientes';
@@ -41,6 +39,7 @@ type ActivityItem = {
 };
 
 type Props = {
+    heroImagen: string;
     stats: Stats;
     recentClientes: Cliente[];
     recentUsuarios: UserType[];
@@ -67,6 +66,7 @@ const userRole = auth?.roles?.[0]
 
 const formatDate = (date: string) => {
     const d = new Date(date);
+
     return d.toLocaleDateString('es-MX', {
         day: 'numeric',
         month: 'short',
@@ -198,6 +198,20 @@ defineOptions({
                         </span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="relative h-48 overflow-hidden rounded-[24px] animate-scale-in-bounce sm:h-64 lg:h-72">
+            <div class="absolute inset-0">
+                <img
+                    :src="props.heroImagen"
+                    alt="Habitación moderna con productos de descanso"
+                    class="animate-hero-zoom h-full w-full object-cover object-[center_55%] brightness-110 saturate-125 contrast-110"
+                />
+                <div class="animate-aurora-1 absolute -top-32 left-[8%] h-[28rem] w-[28rem] rounded-full bg-sky-400/15 blur-3xl"></div>
+                <div class="animate-aurora-2 absolute -right-24 bottom-[-8rem] h-[34rem] w-[34rem] rounded-full bg-fuchsia-500/15 blur-3xl"></div>
+                <div class="absolute inset-0 bg-linear-to-r from-slate-950/65 via-purple-950/25 to-transparent"></div>
+                <div class="absolute inset-0 bg-linear-to-t from-slate-950/55 via-transparent to-purple-950/10"></div>
             </div>
         </div>
 
@@ -392,7 +406,7 @@ defineOptions({
                         </div>
                         <div class="divide-y divide-[#7DD3FC]/10 dark:divide-gray-800">
                             <div
-                                v-for="(cliente, index) in recentClientes"
+                                v-for="cliente in recentClientes"
                                 :key="cliente.id"
                                 class="flex items-center gap-4 px-6 py-3.5 hover:bg-gradient-to-r hover:from-[#7DD3FC]/5 hover:to-[#C084FC]/5 transition-all duration-200"
                             >

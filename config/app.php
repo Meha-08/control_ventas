@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'hero_image' => env('HERO_IMAGE_URL', 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=2000&q=85'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

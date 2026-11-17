@@ -15,13 +15,19 @@ defineProps<{
     description?: string;
 }>();
 
+const pseudoRandom = (seed: number): number => {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+
+    return value - Math.floor(value);
+};
+
 const bubbles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: 20 + Math.random() * 80,
-    left: Math.random() * 100,
-    delay: Math.random() * 8,
-    duration: 8 + Math.random() * 12,
-    opacity: 0.06 + Math.random() * 0.08,
+    size: 20 + pseudoRandom(i + 1) * 80,
+    left: pseudoRandom(i + 13) * 100,
+    delay: pseudoRandom(i + 29) * 8,
+    duration: 8 + pseudoRandom(i + 47) * 12,
+    opacity: 0.06 + pseudoRandom(i + 67) * 0.08,
 }));
 </script>
 

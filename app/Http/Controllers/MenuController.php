@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\DescansoProducto;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,8 +22,21 @@ class MenuController extends Controller
             ->orderBy('nombre_producto')
             ->get();
 
+        $tipos = Category::activeNames();
+
+        if ($tipos === []) {
+            $tipos = DescansoProducto::query()
+                ->where('estado', 'Disponible')
+                ->distinct()
+                ->orderBy('tipo_producto')
+                ->pluck('tipo_producto')
+                ->all();
+        }
+
         return Inertia::render('menu/Index', [
+            'heroImagen' => (string) config('app.hero_image'),
             'productos' => $productos,
+            'tipos' => $tipos,
             'filters' => $request->only('search', 'tipo'),
         ]);
     }

@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowRight, BedDouble, Search, ShoppingBag, Star, X } from 'lucide-vue-next';
+import { BedDouble, Search, ShoppingBag, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 type Product = {
@@ -15,15 +15,15 @@ type Product = {
 };
 
 type Props = {
+    heroImagen: string;
     productos: Product[];
+    tipos: string[];
     filters: { search?: string; tipo?: string };
 };
 
 const props = defineProps<Props>();
 
 const search = ref(props.filters.search ?? '');
-
-const tipos = ['Colchones', 'Somier', 'Espaldar', 'Almohadas', 'Cama completa'];
 
 const buscar = () => {
     router.get('/menu', {
@@ -46,7 +46,11 @@ const filtrar = (tipo: string) => {
 
 const formatPrice = (price: string | number) => {
     const num = typeof price === 'string' ? Number.parseFloat(price) : price;
-    if (Number.isNaN(num)) return 'Bs 0.00';
+
+    if (Number.isNaN(num)) {
+return 'Bs 0.00';
+}
+
     return 'Bs ' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
@@ -54,13 +58,19 @@ const getImagenUrl = (p: Product): string | null => {
     return p.imagen_url || null;
 };
 
+const pseudoRandom = (seed: number): number => {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+
+    return value - Math.floor(value);
+};
+
 const bubbles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: 20 + Math.random() * 80,
-    left: Math.random() * 100,
-    delay: Math.random() * 8,
-    duration: 8 + Math.random() * 12,
-                    opacity: 0.06 + Math.random() * 0.08,
+    size: 20 + pseudoRandom(i + 1) * 80,
+    left: pseudoRandom(i + 13) * 100,
+    delay: pseudoRandom(i + 29) * 8,
+    duration: 8 + pseudoRandom(i + 47) * 12,
+    opacity: 0.06 + pseudoRandom(i + 67) * 0.08,
 }));
 </script>
 
@@ -109,19 +119,34 @@ const bubbles = Array.from({ length: 12 }, (_, i) => ({
             </nav>
 
             <div class="mx-auto max-w-7xl px-6 pt-32 pb-16">
-                <div class="mb-14 text-center">
-                    <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-md ring-1 ring-white/30 drop-shadow-md">
-                        <Star class="h-3.5 w-3.5 text-white" />
-                        Catálogo ROZE
-                    </div>
-                    <h1 class="text-4xl font-black text-white drop-shadow-lg md:text-5xl">
-                        Nuestro
-                        <span class="text-white/90">Menú</span>
+                <div class="mb-10 text-center">
+                    <h1 class="bg-linear-to-r from-sky-200 via-purple-200 to-white bg-clip-text text-4xl font-black text-transparent drop-shadow-lg md:text-5xl">
+                        Catálogo
                     </h1>
                     <p class="mx-auto mt-3 max-w-xl text-lg font-medium text-white drop-shadow-md">
                         Productos diseñados para tu mejor descanso
                     </p>
                 </div>
+
+                <div class="animate-border-rotate relative mb-10 rounded-[24px] p-[2px] animate-scale-in-bounce" style="background: linear-gradient(135deg, #7DD3FC, #C084FC, #9333EA, #7E22CE, #7DD3FC)">
+                    <div class="relative h-48 overflow-hidden rounded-[22px] sm:h-64 lg:h-72">
+                        <div class="absolute inset-0">
+                            <img
+                                :src="props.heroImagen"
+                                alt="Habitación moderna con productos de descanso"
+                                class="animate-hero-zoom h-full w-full object-cover object-[center_55%] brightness-110 saturate-125 contrast-110"
+                            />
+                            <div class="animate-aurora-1 absolute -top-32 left-[8%] h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl"></div>
+                            <div class="animate-aurora-2 absolute -right-24 bottom-[-8rem] h-[34rem] w-[34rem] rounded-full bg-fuchsia-500/25 blur-3xl"></div>
+                            <div class="animate-glow-pulse absolute top-6 left-10 h-16 w-16 rounded-full bg-sky-300/30 blur-2xl"></div>
+                            <div class="animate-glow-pulse absolute right-12 bottom-8 h-20 w-20 rounded-full bg-fuchsia-300/30 blur-2xl" style="animation-delay: 1.2s"></div>
+                            <div class="animate-hero-shimmer pointer-events-none absolute top-0 left-0 h-full w-1/3 bg-linear-to-r from-transparent via-white/25 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-r from-slate-950/60 via-purple-950/20 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-slate-950/50 via-transparent to-purple-950/5"></div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div class="mb-10 flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-[200px] max-w-md">

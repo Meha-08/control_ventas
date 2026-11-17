@@ -24,4 +24,14 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    /** @return list<string> */
+    public static function activeNames(): array
+    {
+        return static::query()
+            ->where('active', true)
+            ->orderBy('nombre')
+            ->pluck('nombre')
+            ->all();
+    }
 }
