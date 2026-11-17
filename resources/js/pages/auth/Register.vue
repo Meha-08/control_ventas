@@ -171,6 +171,7 @@ defineOptions({
                     />
                 </div>
                 <InputError :message="errors.password" />
+                <p class="text-xs text-white/60">Mínimo 8 caracteres.</p>
             </div>
 
             <div class="grid gap-2">

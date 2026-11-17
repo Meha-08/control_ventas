@@ -29,3 +29,30 @@ test('new users can register', function () {
     expect($user->a_paterno)->toBe('User');
     expect($user->hasRole('vendedor'))->toBeTrue();
 });
+
+test('registration accepts eight letters without numbers or symbols', function () {
+    $response = $this->post('/register', [
+        'nombre_u' => 'Solo',
+        'a_paterno' => 'Letras',
+        'a_materno' => '',
+        'email' => 'letras@example.com',
+        'password' => 'abcdefgh',
+        'password_confirmation' => 'abcdefgh',
+    ]);
+
+    $response->assertRedirect();
+    assertAuthenticated();
+});
+
+test('registration rejects passwords shorter than eight characters', function () {
+    $response = $this->post('/register', [
+        'nombre_u' => 'Corto',
+        'a_paterno' => 'User',
+        'a_materno' => '',
+        'email' => 'corto@example.com',
+        'password' => 'abcdefg',
+        'password_confirmation' => 'abcdefg',
+    ]);
+
+    $response->assertSessionHasErrors('password');
+});
